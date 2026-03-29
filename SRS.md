@@ -348,4 +348,343 @@ The system supports three roles:
 
 ---
 
+## 10. Use Case Diagram
+
+```mermaid
+flowchart TD
+    Admin([👤 Admin])
+    Teacher([👨‍🏫 Teacher])
+    Student([🎓 Student])
+
+    subgraph AUTH [Authentication]
+        UC1[Login]
+        UC2[Logout]
+        UC3[Change Password]
+        UC4[Update Profile]
+    end
+
+    subgraph ADMIN_UC [Admin Use Cases]
+        UC5[Manage Users]
+        UC6[View Activity Logs]
+        UC7[Manage Fees]
+        UC8[Post Announcements]
+        UC9[Manage Hostel]
+        UC10[View Reports & Analytics]
+        UC11[Resolve Tech Tickets]
+        UC12[Manage Events]
+        UC13[Manage Canteen Menu]
+    end
+
+    subgraph TEACHER_UC [Teacher Use Cases]
+        UC14[Mark Attendance]
+        UC15[Create Assignments]
+        UC16[Grade Submissions]
+        UC17[Enter Exam Marks]
+        UC18[Publish Results]
+        UC19[Approve/Reject Leaves]
+        UC20[Send Messages]
+        UC21[Post Announcements]
+    end
+
+    subgraph STUDENT_UC [Student Use Cases]
+        UC22[View Attendance]
+        UC23[Submit Assignments]
+        UC24[View Results & GPA]
+        UC25[View Fee Details]
+        UC26[Apply for Leave]
+        UC27[Search Library Books]
+        UC28[View Timetable]
+        UC29[Post Lost & Found]
+        UC30[Raise Tech Ticket]
+        UC31[Send Messages]
+        UC32[View Events]
+        UC33[View Canteen Menu]
+        UC34[View Hostel Details]
+        UC35[Log Medical Visit]
+    end
+
+    Admin --> UC1 & UC2 & UC3 & UC4
+    Teacher --> UC1 & UC2 & UC3 & UC4
+    Student --> UC1 & UC2 & UC3 & UC4
+
+    Admin --> UC5 & UC6 & UC7 & UC8 & UC9 & UC10 & UC11 & UC12 & UC13
+    Teacher --> UC14 & UC15 & UC16 & UC17 & UC18 & UC19 & UC20 & UC21
+    Student --> UC22 & UC23 & UC24 & UC25 & UC26 & UC27 & UC28 & UC29 & UC30 & UC31 & UC32 & UC33 & UC34 & UC35
+```
+
+---
+
+## 11. ER Diagram (Entity Relationship)
+
+```mermaid
+erDiagram
+    USER {
+        ObjectId _id PK
+        string name
+        string email
+        string password
+        string role
+        string department
+        string rollNo
+        string class
+        int semester
+        string batch
+        string subject
+        string designation
+        boolean isActive
+        string[] permissions
+    }
+
+    ATTENDANCE {
+        ObjectId _id PK
+        ObjectId studentId FK
+        string studentName
+        string subject
+        string class
+        date date
+        string status
+        ObjectId markedBy FK
+    }
+
+    ASSIGNMENT {
+        ObjectId _id PK
+        string title
+        string subject
+        string class
+        date dueDate
+        ObjectId createdBy FK
+        string description
+    }
+
+    SUBMISSION {
+        ObjectId _id PK
+        ObjectId assignmentId FK
+        ObjectId studentId FK
+        string studentName
+        string content
+        int marks
+        string status
+    }
+
+    RESULT {
+        ObjectId _id PK
+        ObjectId studentId FK
+        string studentName
+        string subject
+        string examType
+        int marksObtained
+        int totalMarks
+        string grade
+        boolean isPublished
+        ObjectId enteredBy FK
+    }
+
+    FEE {
+        ObjectId _id PK
+        ObjectId studentId FK
+        string studentName
+        string feeType
+        float amount
+        string status
+        date dueDate
+        date paidDate
+    }
+
+    LEAVE_REQUEST {
+        ObjectId _id PK
+        ObjectId studentId FK
+        string studentName
+        string type
+        date fromDate
+        date toDate
+        int days
+        string reason
+        string status
+        ObjectId reviewedBy FK
+    }
+
+    NOTIFICATION {
+        ObjectId _id PK
+        string title
+        string message
+        string targetRole
+        ObjectId createdBy FK
+        boolean isActive
+    }
+
+    EVENT {
+        ObjectId _id PK
+        string title
+        string description
+        date date
+        string venue
+        string category
+        ObjectId createdBy FK
+    }
+
+    CHAT {
+        ObjectId _id PK
+        ObjectId sender FK
+        ObjectId receiver FK
+        string message
+        boolean isRead
+        date createdAt
+    }
+
+    LIBRARY {
+        ObjectId _id PK
+        string title
+        string author
+        string isbn
+        int totalCopies
+        int availableCopies
+        ObjectId issuedTo FK
+        date dueDate
+    }
+
+    HOSTEL {
+        ObjectId _id PK
+        string roomNumber
+        string block
+        string type
+        ObjectId studentId FK
+        string studentName
+        string status
+    }
+
+    TECH_SUPPORT {
+        ObjectId _id PK
+        ObjectId raisedBy FK
+        string title
+        string description
+        string category
+        string status
+        string priority
+    }
+
+    ACTIVITY_LOG {
+        ObjectId _id PK
+        ObjectId user FK
+        string action
+        string module
+        string status
+        date createdAt
+    }
+
+    USER ||--o{ ATTENDANCE : "has"
+    USER ||--o{ ASSIGNMENT : "creates"
+    USER ||--o{ SUBMISSION : "submits"
+    USER ||--o{ RESULT : "has"
+    USER ||--o{ FEE : "owes"
+    USER ||--o{ LEAVE_REQUEST : "applies"
+    USER ||--o{ NOTIFICATION : "creates"
+    USER ||--o{ EVENT : "creates"
+    USER ||--o{ CHAT : "sends"
+    USER ||--o{ LIBRARY : "borrows"
+    USER ||--o{ HOSTEL : "occupies"
+    USER ||--o{ TECH_SUPPORT : "raises"
+    USER ||--o{ ACTIVITY_LOG : "generates"
+    ASSIGNMENT ||--o{ SUBMISSION : "receives"
+```
+
+---
+
+## 12. Data Flow Diagram (DFD)
+
+### Level 0 — Context Diagram
+
+```mermaid
+flowchart LR
+    Admin([👤 Admin])
+    Teacher([👨‍🏫 Teacher])
+    Student([🎓 Student])
+
+    CGU(["🖥️ CGU Portal\nERP System"])
+
+    Admin -- "Manage users, fees,\nreports, announcements" --> CGU
+    Teacher -- "Attendance, marks,\nassignments, leaves" --> CGU
+    Student -- "View results, fees,\nsubmit assignments" --> CGU
+
+    CGU -- "Dashboards, analytics,\nnotifications" --> Admin
+    CGU -- "Class data, pending\nactions, reports" --> Teacher
+    CGU -- "Grades, timetable,\nfee status, events" --> Student
+
+    CGU <--> DB[("🗄️ MongoDB\nDatabase")]
+```
+
+---
+
+### Level 1 — Detailed DFD
+
+```mermaid
+flowchart TD
+    Admin([👤 Admin])
+    Teacher([👨‍🏫 Teacher])
+    Student([🎓 Student])
+
+    subgraph P1 ["1.0 Authentication"]
+        Login["1.1 Validate Login"]
+        Token["1.2 Issue JWT Token"]
+        RBAC["1.3 Check Role & Permissions"]
+    end
+
+    subgraph P2 ["2.0 User Management"]
+        CreateUser["2.1 Create User"]
+        ManageUser["2.2 Edit / Deactivate"]
+        ViewLogs["2.3 View Activity Logs"]
+    end
+
+    subgraph P3 ["3.0 Academic Management"]
+        Attendance["3.1 Mark Attendance"]
+        Assignment["3.2 Create Assignment"]
+        Submission["3.3 Submit Assignment"]
+        Results["3.4 Enter & Publish Marks"]
+        Timetable["3.5 View Timetable"]
+    end
+
+    subgraph P4 ["4.0 Finance Management"]
+        FeeCreate["4.1 Create Fee Record"]
+        FeeView["4.2 View Fee Status"]
+        FeePay["4.3 Mark as Paid"]
+    end
+
+    subgraph P5 ["5.0 Campus Services"]
+        Hostel["5.1 Hostel Allocation"]
+        Library["5.2 Library Management"]
+        Food["5.3 Canteen Menu"]
+        Dispensary["5.4 Medical Records"]
+        Events["5.5 Events Management"]
+    end
+
+    subgraph P6 ["6.0 Communication"]
+        Notice["6.1 Post Announcement"]
+        Chat["6.2 Send Message"]
+        Leave["6.3 Leave Request"]
+        LostFound["6.4 Lost & Found"]
+        Tech["6.5 Tech Support"]
+    end
+
+    DB[("🗄️ MongoDB")]
+
+    Admin --> Login --> Token --> RBAC
+    Teacher --> Login
+    Student --> Login
+
+    Admin --> CreateUser & ManageUser & ViewLogs
+    Admin --> FeeCreate & FeePay
+    Admin --> Hostel & Events & Food
+
+    Teacher --> Attendance & Assignment & Results
+    Teacher --> Notice & Leave
+
+    Student --> Submission & Timetable
+    Student --> FeeView
+    Student --> Library & Dispensary
+    Student --> Chat & LostFound & Tech
+
+    P1 & P2 & P3 & P4 & P5 & P6 <--> DB
+```
+
+---
+
 *End of SRS Document*
