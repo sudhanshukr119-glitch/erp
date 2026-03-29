@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # 🎓 CGU Portal - Premium College ERP System
 
 <div align="center">
@@ -444,3 +445,6 @@ For support, email support@yourdomain.com or join our [Discord server](https://d
 [Website](https://yourdomain.com) • [Documentation](./docs) • [Report Bug](https://github.com/yourusername/cgu-portal/issues) • [Request Feature](https://github.com/yourusername/cgu-portal/issues)
 
 </div>
+=======
+# UNIVERSITY-ERP
+>>>>>>> fd1c569d051e7b122dbade5f34427eca066da05f
