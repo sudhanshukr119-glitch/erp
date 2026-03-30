@@ -291,6 +291,101 @@ function TeacherDashboard({ user, setActive }) {
   );
 }
 
+/* ─── EXAM COUNTDOWN WIDGET ─── */
+const EXAMS = [
+  { name: "Mid-Term Exam",     subject: "Mathematics",     date: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() + 12) },
+  { name: "End-Term Exam",     subject: "Computer Science", date: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() + 28) },
+  { name: "Practical Exam",    subject: "Physics Lab",      date: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() + 5)  },
+  { name: "Quiz",              subject: "Data Structures",  date: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() + 2)  },
+];
+
+function ExamCountdown() {
+  const [now, setNow] = useState(new Date());
+  const [activeExam, setActiveExam] = useState(0);
+
+  useEffect(() => {
+    const t = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(t);
+  }, []);
+
+  const sorted = [...EXAMS].sort((a, b) => a.date - b.date);
+  const exam = sorted[activeExam] || sorted[0];
+  const diff = exam.date - now;
+  const days    = Math.max(0, Math.floor(diff / (1000 * 60 * 60 * 24)));
+  const hours   = Math.max(0, Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)));
+  const minutes = Math.max(0, Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)));
+  const seconds = Math.max(0, Math.floor((diff % (1000 * 60)) / 1000));
+  const urgent  = days < 3;
+  const color   = days < 3 ? "#ef4444" : days < 7 ? "#f59e0b" : "#6366f1";
+  const glow    = days < 3 ? "rgba(239,68,68,0.25)" : days < 7 ? "rgba(245,158,11,0.2)" : "rgba(99,102,241,0.2)";
+
+  return (
+    <div className="card" style={{ marginBottom: 16, border: `1px solid ${color}40`, background: `linear-gradient(135deg, var(--surface) 0%, ${glow} 100%)` }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
+        <p className="chart-title" style={{ margin: 0 }}>⏳ Exam Countdown</p>
+        <div style={{ display: "flex", gap: 6 }}>
+          {sorted.map((e, i) => (
+            <button key={i} onClick={() => setActiveExam(i)}
+              style={{ padding: "3px 10px", borderRadius: 8, border: `1px solid ${i === activeExam ? color : "var(--border)"}`, background: i === activeExam ? `${color}20` : "transparent", color: i === activeExam ? color : "var(--text3)", fontSize: "0.7rem", fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>
+              {e.subject.split(" ")[0]}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div style={{ display: "flex", alignItems: "center", gap: 20, flexWrap: "wrap" }}>
+        {/* Countdown blocks */}
+        <div style={{ display: "flex", gap: 10 }}>
+          {[[days, "Days"], [hours, "Hours"], [minutes, "Mins"], [seconds, "Secs"]].map(([val, label]) => (
+            <div key={label} style={{ textAlign: "center", minWidth: 56 }}>
+              <div style={{
+                background: `${color}15`, border: `1px solid ${color}40`,
+                borderRadius: 12, padding: "10px 8px",
+                fontFamily: "JetBrains Mono, monospace",
+                fontSize: "1.6rem", fontWeight: 800, color,
+                boxShadow: urgent ? `0 0 12px ${glow}` : "none",
+                minWidth: 56, textAlign: "center",
+                transition: "color 0.3s"
+              }}>
+                {String(val).padStart(2, "0")}
+              </div>
+              <p style={{ fontSize: "0.6rem", color: "var(--text3)", marginTop: 4, fontWeight: 600, textTransform: "uppercase", letterSpacing: "1px" }}>{label}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Exam info */}
+        <div style={{ flex: 1, minWidth: 160 }}>
+          <p style={{ fontWeight: 800, fontSize: "1rem", color: "var(--text)", marginBottom: 4 }}>{exam.name}</p>
+          <p style={{ fontSize: "0.8rem", color: "var(--text3)", marginBottom: 8 }}>{exam.subject}</p>
+          <p style={{ fontSize: "0.75rem", color, fontWeight: 600 }}>
+            📅 {exam.date.toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "long", year: "numeric" })}
+          </p>
+          {urgent && (
+            <div style={{ marginTop: 8, display: "flex", alignItems: "center", gap: 6, background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: 8, padding: "5px 10px" }}>
+              <span style={{ fontSize: "0.75rem" }}>🚨</span>
+              <span style={{ fontSize: "0.72rem", color: "#f87171", fontWeight: 600 }}>Exam is very soon! Start preparing now.</span>
+            </div>
+          )}
+        </div>
+
+        {/* Progress ring */}
+        <div style={{ textAlign: "center" }}>
+          <svg width={80} height={80} style={{ transform: "rotate(-90deg)" }}>
+            <circle cx={40} cy={40} r={32} fill="none" stroke="var(--surface3)" strokeWidth={6} />
+            <circle cx={40} cy={40} r={32} fill="none" stroke={color} strokeWidth={6}
+              strokeDasharray={`${2 * Math.PI * 32}`}
+              strokeDashoffset={`${2 * Math.PI * 32 * (1 - Math.min(1, days / 30))}`}
+              strokeLinecap="round" style={{ transition: "stroke-dashoffset 1s ease" }}
+            />
+          </svg>
+          <p style={{ fontSize: "0.65rem", color: "var(--text3)", marginTop: -8, fontWeight: 600 }}>{days}d left</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ─── STUDENT DASHBOARD ─── */
 function StudentDashboard({ user, setActive }) {
   const [stats, setStats] = useState({ attendance: 0, assignments: 0, fees: 0, events: 0 });
@@ -373,6 +468,8 @@ function StudentDashboard({ user, setActive }) {
           <div className="stat-info"><p>Upcoming Events</p><h3>{loading ? "—" : stats.events}</h3></div>
         </div>
       </div>
+
+      <ExamCountdown />
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 16 }}>
         {/* SGPA Trend */}
