@@ -156,7 +156,7 @@ CGU Portal is a **competition-winning, enterprise-grade College ERP system** des
 
 1. **Clone the repository**
 ```bash
-git clone https://github.com/yourusername/cgu-portal.git
+git clone https://github.com/sudhanshukr119-glitch/erp.git
 cd cgu-portal
 ```
 
@@ -391,14 +391,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-## 👥 Team
-
-- **Project Lead** - [Your Name](https://github.com/yourusername)
-- **Backend Developer** - [Name](https://github.com/username)
-- **Frontend Developer** - [Name](https://github.com/username)
-- **UI/UX Designer** - [Name](https://github.com/username)
-
----
 
 ## 🙏 Acknowledgments
 
