@@ -169,7 +169,6 @@ npm install
 3. **Configure environment variables**
 ```bash
 cp .env.example .env
-# Edit .env with your configuration
 ```
 
 4. **Start MongoDB**
@@ -314,12 +313,10 @@ RAZORPAY_KEY_SECRET=your-razorpay-secret
 
 ### Frontend Environment Variables
 
-```env
+env
 REACT_APP_API_URL=http://localhost:5000/api
 REACT_APP_SOCKET_URL=ws://localhost:5000
-```
 
----
 
 ## 🧪 Testing
 
